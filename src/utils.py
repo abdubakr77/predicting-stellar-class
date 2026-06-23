@@ -26,3 +26,18 @@ def show_corr(df,save_path:str=None):
     if save_path:
         plt.savefig(save_path, dpi=300)
     plt.show()
+
+
+def show_outliers(df , save_path:str=None):
+    
+    plt.figure(figsize=(12, 6))
+    sns.boxplot(df)
+    plt.xticks(rotation=45)
+    plt.grid()
+    plt.title('Box Plot')
+    plt.tight_layout()
+
+    if save_path:
+        plt.savefig(save_path, dpi=300)
+
+    plt.show()
