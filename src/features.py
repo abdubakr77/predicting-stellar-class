@@ -108,3 +108,22 @@ def get_feature_columns(df: pd.DataFrame, target_col: str = "class", id_col: str
     drop_cols = {target_col, id_col, "spectral_type", "galaxy_population"}
     return [c for c in df.columns if c not in drop_cols and df[c].dtype != object and str(df[c].dtype) != "string"]
 
+
+train_feat = build_features(train_df)
+test_feat  = build_features(test_df)
+
+TARGET_COL = "class"
+ID_COL = "id"
+
+y = encode_target(train_df)
+feature_cols = get_feature_columns(train_feat, TARGET_COL, ID_COL)
+cat_features = [c for c in ["sky_region", "alpha_bin", "delta_bin"] if c in feature_cols]
+
+X = train_feat[feature_cols]
+X_test = test_feat[feature_cols]
+
+print(f"{len(feature_cols)} features:")
+print(feature_cols)
+X.head()
+
+
