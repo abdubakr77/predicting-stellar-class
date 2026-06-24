@@ -7,7 +7,7 @@ def load_data(df_path,include_class=True):
 
     cols = ['spectral_type','galaxy_population']
     
-    dummy_data = pd.get_dummies(df[cols])
+    dummy_data = pd.get_dummies(df[cols],dtype=int)
     dummy_data.drop('galaxy_population_Blue_Cloud',inplace=True,axis=1)
 
     df.drop(cols,inplace=True,axis=1)
