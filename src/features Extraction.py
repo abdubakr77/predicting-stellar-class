@@ -45,21 +45,6 @@ def add_redshift_interaction(df: pd.DataFrame):
     return df
 
 
-def add_color_ratios(df: pd.DataFrame):
-    df = df.copy()
-
-    required_cols = ["color_ug", "color_gr"]
-
-    missing = [c for c in required_cols if c not in df.columns]
-
-    if missing:
-        raise ValueError(f'{missing} Not Found! Please Make sure that you added all the 7 colour indices from add_color_indices function!')
-    
-    # df['ug_gr_ratio'] = df['color_ug'] / (df['color_gr'] + 1e-6)
-    df['gr_ri_ratio'] = df['color_gr'] / (df['color_ri'] + 1e-6)
-
-    return df
-
 def add_qso_color_region(df: pd.DataFrame):
     df = df.copy()
 
@@ -120,7 +105,6 @@ def add_stellar_locus_distance(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-
 def build_features(df: pd.DataFrame) -> pd.DataFrame:
     """Run the full report-aligned feature-engineering pipeline in order."""
     
@@ -133,7 +117,6 @@ def build_features(df: pd.DataFrame) -> pd.DataFrame:
     df = add_stellar_locus_distance(df)
 
     # Experimental color features
-    df = add_color_ratios(df)
     df = add_qso_color_region(df)
 
     # Statistical features
