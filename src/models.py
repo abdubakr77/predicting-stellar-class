@@ -1,8 +1,58 @@
 from catboost import CatBoostClassifier
 from lightgbm import LGBMClassifier
 from xgboost import XGBClassifier
+import optuna
 import numpy as np
 from sklearn.metrics import accuracy_score
+from sklearn.model_selection import cross_val_score
+
+
+def auto_tune(X,y,model_class, tuning_params:dict = None, cv=None , n_trials=50):
+
+    if tuning_params is None:
+        raise ValueError(
+            "tuning_params is required. Example: CATBOOST_PARAMS"
+        )
+
+
+    params = {}
+    def objective(trial):
+        for param_name, config in tuning_params.items():
+            if config[0] == 'int':
+                params[param_name] = trial.suggest_int(param_name,config[1],config[2])
+
+            elif config[0] == 'float':
+                
+                params[param_name] = trial.suggest_float(param_name,config[1],config[2],log=config[3])
+            
+            else:
+                params[param_name] = config
+
+        model = model_class(**params)
+
+        scores = cross_val_score(
+            model,
+            X,
+            y,
+            cv=cv,
+            scoring="accuracy",
+            n_jobs=-1
+        )
+        
+        return scores.mean()
+        
+    study = optuna.create_study(
+        direction="maximize"
+    )
+
+    study.optimize(
+        objective,
+        n_trials=n_trials
+    )
+
+    return study
+    
+
 def train_pipline(X,y,model_class, model_params:dict = None, cv=None):
 
         
