@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import seaborn as sns
+from sklearn.metrics import confusion_matrix
 
 def show_count_plots(df,col,draw_pie_chart = True,save_path:str=None):
     counts = df[col].value_counts()
@@ -43,4 +44,22 @@ def show_outliers(df , save_path:str=None):
     if save_path:
         plt.savefig(save_path, dpi=300)
 
+    plt.show()
+
+
+def show_confusion_matrix(y_true,y_pred,target_names=None,save_path:str=None):
+
+    cm = confusion_matrix(y_true, y_pred)
+
+    plt.figure(figsize=(8, 7))
+    sns.heatmap(cm, annot=True, fmt='d', cmap='Blues',
+                xticklabels=None if target_names is None else target_names, 
+                yticklabels=None if target_names is None else target_names)
+
+    plt.xlabel('Predicted')
+    plt.ylabel('Actual')
+    plt.title('Confusion Matrix')
+    plt.tight_layout()
+    if save_path:
+        plt.savefig(save_path, dpi=300)
     plt.show()
