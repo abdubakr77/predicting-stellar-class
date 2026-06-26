@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.metrics import confusion_matrix
+import pandas as pd
 
 def show_count_plots(df,col,draw_pie_chart = True,save_path:str=None):
     counts = df[col].value_counts()
@@ -63,3 +64,48 @@ def show_confusion_matrix(y_true,y_pred,target_names=None,save_path:str=None):
     if save_path:
         plt.savefig(save_path, dpi=300)
     plt.show()
+
+
+
+
+def remove_outliers_iqr(
+    df: pd.DataFrame,
+    columns: list = None,
+    factor: float = 2.0) -> pd.DataFrame:
+    """
+    Remove outliers using the IQR method.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        Input dataframe.
+    columns : list
+        Numerical columns to process.
+    factor : float
+        IQR multiplier (default=2.0).
+
+    Returns
+    -------
+    pd.DataFrame
+        DataFrame after removing outliers.
+    """
+
+    df = df.copy()
+
+    if columns is None:
+        columns = ["u", "g", "r", "i", "z"]
+
+    mask = pd.Series(True, index=df.index)
+
+    for col in columns:
+        q1 = df[col].quantile(0.25)
+        q3 = df[col].quantile(0.75)
+
+        iqr = q3 - q1
+
+        lower = q1 - factor * iqr
+        upper = q3 + factor * iqr
+
+        mask &= df[col].between(lower, upper)
+
+    return df.loc[mask].reset_index(drop=True)

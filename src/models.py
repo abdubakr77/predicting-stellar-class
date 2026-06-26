@@ -118,7 +118,7 @@ def train_pipline(X,y,model_class, model_params:dict = None, cv=None,use_class_w
         all_score.append(score)
 
         print(f"Fold {fold}: {score:.5f}")
-
+    
     ma = sum(all_score) / len(all_score)
     print(f"Mean CV Accuracy: {ma:.5f}\n")
     print('='*50)
