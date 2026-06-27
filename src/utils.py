@@ -1,7 +1,9 @@
 import matplotlib.pyplot as plt
 import seaborn as sns
-from sklearn.metrics import confusion_matrix
 import pandas as pd
+from sklearn.metrics import confusion_matrix,roc_curve, auc
+from sklearn.preprocessing import label_binarize
+
 
 def show_count_plots(df,col,draw_pie_chart = True,save_path:str=None):
     counts = df[col].value_counts()
@@ -109,3 +111,32 @@ def remove_outliers_iqr(
         mask &= df[col].between(lower, upper)
 
     return df.loc[mask].reset_index(drop=True)
+
+
+
+def plot_roc_curve(y_true, y_probas, target_names):
+    """
+    y_true: encoded labels (0, 1, 2)
+    y_probas: predict_proba output (n_samples, n_classes)
+    """
+    n_classes = len(target_names)
+    
+    y_bin = label_binarize(y_true, classes=list(range(n_classes)))
+    
+    plt.figure(figsize=(10, 6))
+    
+    colors = ['blue', 'orange', 'green']
+    
+    for i, (name, color) in enumerate(zip(target_names, colors)):
+        fpr, tpr, _ = roc_curve(y_bin[:, i], y_probas[:, i])
+        roc_auc = auc(fpr, tpr)
+        plt.plot(fpr, tpr, color=color,
+                 label=f'{name} (AUC = {roc_auc:.4f})')
+    
+    plt.plot([0, 1], [0, 1], 'k--')
+    plt.xlabel('False Positive Rate')
+    plt.ylabel('True Positive Rate')
+    plt.title('ROC Curve')
+    plt.legend()
+    plt.tight_layout()
+    plt.show()
