@@ -128,6 +128,17 @@ def add_locus_curvature(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
+def add_redshift_features(df: pd.DataFrame) -> pd.DataFrame:
+    """redshift² and zone thresholds"""
+    df = df.copy()
+    df['redshift_sq']   = df['redshift'] ** 2
+    df['redshift_low']  = (df['redshift'] < 0.1).astype(int)
+    df['redshift_mid']  = ((df['redshift'] >= 0.1) & 
+                           (df['redshift'] < 0.8)).astype(int)
+    df['redshift_high'] = (df['redshift'] >= 0.8).astype(int)
+    return df
+
+
 def build_features(df: pd.DataFrame) -> pd.DataFrame:
     """Run the full report-aligned feature-engineering pipeline in order."""
     
