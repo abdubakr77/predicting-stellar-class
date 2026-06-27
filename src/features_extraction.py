@@ -164,22 +164,17 @@ def add_redshift_color_interactions(df: pd.DataFrame) -> pd.DataFrame:
 def build_features(df: pd.DataFrame) -> pd.DataFrame:
     """Run the full report-aligned feature-engineering pipeline in order."""
     
-    # Base astronomy features
     df = add_color_indices(df)
     df = add_redshift_transform(df)
-
-    # Physics-driven interactions
     df = add_redshift_interaction(df)
     df = add_stellar_locus_distance(df)
-
-    # Experimental color features
     df = add_qso_color_region(df)
-
-    # Statistical features
     df = add_brightness_stat(df)
-
-    # Positional features
     df = add_alpha_cyclic(df)
+    df = add_locus_curvature(df)
+    df = add_redshift_features(df)
+    df = add_sky_coords_3d(df)
+    df = add_redshift_color_interactions(df)
 
     return df
 
