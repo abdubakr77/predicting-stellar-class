@@ -149,6 +149,18 @@ def add_sky_coords_3d(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
+def add_redshift_color_interactions(df: pd.DataFrame) -> pd.DataFrame:
+    df = df.copy()
+    required = ["color_ug", "color_gr"]
+    missing = [c for c in required if c not in df.columns]
+    if missing:
+        raise ValueError(f'{missing} not found! Run add_color_indices first.')
+    
+    df['z_x_u_g'] = df['redshift'] * df['color_ug']
+    df['z_x_g_r'] = df['redshift'] * df['color_gr']
+    return df
+
+
 def build_features(df: pd.DataFrame) -> pd.DataFrame:
     """Run the full report-aligned feature-engineering pipeline in order."""
     
