@@ -113,6 +113,21 @@ def add_galaxy_population_formula(df: pd.DataFrame) -> pd.DataFrame:
     ).astype(str)
     return df
 
+
+def add_locus_curvature(df: pd.DataFrame) -> pd.DataFrame:
+    """Second-order shape of the stellar locus"""
+    df = df.copy()
+    required = ["color_ug", "color_gr", "color_ri", "color_iz"]
+    missing = [c for c in required if c not in df.columns]
+    if missing:
+        raise ValueError(f'{missing} not found! Run add_color_indices first.')
+    
+    df['ug_gr'] = df['color_ug'] * df['color_gr']
+    df['gr_ri'] = df['color_gr'] * df['color_ri']
+    df['ri_iz'] = df['color_ri'] * df['color_iz']
+    return df
+
+
 def build_features(df: pd.DataFrame) -> pd.DataFrame:
     """Run the full report-aligned feature-engineering pipeline in order."""
     
