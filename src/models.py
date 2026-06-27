@@ -3,7 +3,7 @@ from lightgbm import LGBMClassifier
 from xgboost import XGBClassifier
 import optuna
 import numpy as np
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import balanced_accuracy_score
 from sklearn.model_selection import cross_val_score
 from sklearn.utils.class_weight import compute_sample_weight
 
@@ -113,7 +113,7 @@ def train_pipline(X,y,model_class, model_params:dict = None, cv=None,use_class_w
 
         oof_preds[valid_idx] = preds
 
-        score = accuracy_score(y_valid, preds)
+        score = balanced_accuracy_score(y_valid, preds)
 
         all_score.append(score)
 
