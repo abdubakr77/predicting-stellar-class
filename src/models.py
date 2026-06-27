@@ -72,13 +72,13 @@ def train_pipline(X,y,model_class, model_params:dict = None, cv=None,use_class_w
 
             "LGBMClassifier": LGBMClassifier(
                 random_state=42,
-                verbose=0
+                verbose=-1
             ),
 
             "XGBClassifier": XGBClassifier(
                 random_state=42,
                 eval_metric='mlogloss',
-                verbose=0
+                verbosity=0
             )
         }
 
@@ -91,7 +91,10 @@ def train_pipline(X,y,model_class, model_params:dict = None, cv=None,use_class_w
 
     name = model_class.__name__
 
-    oof_preds = np.zeros(len(y), dtype=int)
+    n_classes = len(np.unique(y))
+    oof_probas = np.zeros((len(y), n_classes))
+    oof_preds = np.zeros((len(y),n_classes), dtype=int)
+
     all_score = []
 
     print(f'Cross Validating with {name} Model Now...')
@@ -110,6 +113,7 @@ def train_pipline(X,y,model_class, model_params:dict = None, cv=None,use_class_w
             model.fit(X_train, y_train)
 
         preds = model.predict(X_valid).flatten()
+        oof_probas[valid_idx] = model.predict_proba(X_valid)
 
         oof_preds[valid_idx] = preds
 
@@ -123,4 +127,4 @@ def train_pipline(X,y,model_class, model_params:dict = None, cv=None,use_class_w
     print(f"Mean CV Accuracy: {ma:.5f}\n")
     print('='*50)
 
-    return model ,oof_preds
+    return model ,oof_preds, oof_probas
