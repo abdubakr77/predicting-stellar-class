@@ -104,6 +104,14 @@ def add_spectral_type_formula(df: pd.DataFrame) -> pd.DataFrame:
     ).astype(str)
     return df
 
+def add_galaxy_population_formula(df: pd.DataFrame) -> pd.DataFrame:
+    df = df.copy()
+    df['galaxy_population'] = pd.cut(
+        df['u'] - df['r'],
+        [-np.inf, 2.2, np.inf],
+        labels=['Blue_Cloud', 'Red_Sequence']
+    ).astype(str)
+    return df
 
 def build_features(df: pd.DataFrame) -> pd.DataFrame:
     """Run the full report-aligned feature-engineering pipeline in order."""
