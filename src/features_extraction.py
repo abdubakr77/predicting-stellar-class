@@ -1,10 +1,6 @@
 import numpy as np
 import pandas as pd
 
-# --- Stellar locus fit reported for this competition ---
-STELLAR_LOCUS_SLOPE = 0.1474
-STELLAR_LOCUS_INTERCEPT = 0.3133
-
 
 def add_color_indices(df: pd.DataFrame) -> pd.DataFrame:
     """Add the 7 colour indices used to cancel out distance/extinction effects."""
@@ -76,32 +72,27 @@ def add_brightness_stat(df:pd.DataFrame):
 def add_alpha_cyclic(df: pd.DataFrame):
     df = df.copy()
 
-    radians = np.radians(df["alpha"])
+    alpha_radians = np.radians(df["alpha"])
+    delta_radians = np.radians(df['delta'])
 
-    df["alpha_sin"] = np.sin(radians)
-    df["alpha_cos"] = np.cos(radians)
+    df["alpha_sin"] = np.sin(alpha_radians)
+    df["alpha_cos"] = np.cos(alpha_radians)
+    df['delta_sin'] = np.sin(delta_radians)
+    df['delta_cos'] = np.cos(delta_radians)
 
     return df
 
 
 def add_stellar_locus_distance(df: pd.DataFrame) -> pd.DataFrame:
-    """
-    Perpendicular distance of each object from the empirical stellar locus
-    line  g-r = 0.1474*(u-g) + 0.3133   in (u-g, g-r) colour space.
 
-    Large distances flag objects that deviate from "normal" point-source
-    stellar behaviour -- i.e. distant galaxies and high-redshift quasars.
-    Requires add_color_indices() to have been run first (uses color_ug, color_gr).
-    """
     df = df.copy()
-    if "color_ug" not in df.columns or "color_gr" not in df.columns:
+    if "color_ri" not in df.columns or "color_gr" not in df.columns:
         df = add_color_indices(df)
-    m, b = STELLAR_LOCUS_SLOPE, STELLAR_LOCUS_INTERCEPT
-    # distance from point (x0, y0) to line y = m*x + b  ==  |m*x0 - y0 + b| / sqrt(m^2 + 1)
-    x0, y0 = df["color_ug"], df["color_gr"]
-    df["stellar_locus_dist"] = np.abs(m * x0 - y0 + b) / np.sqrt(m**2 + 1)
-    # signed version preserves which side of the locus the object falls on
-    df["stellar_locus_signed"] = (m * x0 - y0 + b) / np.sqrt(m**2 + 1)
+        
+    df['stellar_locus_dist'] = np.sqrt((df['g_r'] - 0.52)**2 + (df['r_i'] - 0.25)**2)
+
+    df['qso_locus_dist'] = np.sqrt((df['g_r'] - 0.24)**2 + (df['r_i'] - 0.15)**2)
+
     return df
 
 
