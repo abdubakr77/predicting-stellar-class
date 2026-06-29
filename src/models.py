@@ -1,4 +1,6 @@
-from catboost import CatBoostClassifier
+from pytabkit import RealMLP_TD_Classifier
+from pytabkit import TabM_D_Classifier
+from sklearn.ensemble import ExtraTreesClassifier
 from lightgbm import LGBMClassifier
 from xgboost import XGBClassifier
 import optuna
@@ -67,10 +69,26 @@ def train_pipline(X,y,model_class, model_params:dict = None, cv=None,use_class_w
         print("Warning: No model_params given! Will using default model parameters")
 
         models = {
-            "CatBoostClassifier": CatBoostClassifier(
+            "RealMLP_TD_Classifier": RealMLP_TD_Classifier(
+                device='cuda',
+                random_state=42,
+                n_cv=1,
+                n_refit=0,  
+                verbosity=0,
+                val_metric_name='cross_entropy',
+                use_ls=False,
+            ),
+            "TabM_D_Classifier": TabM_D_Classifier(
+                device='cuda',
+                random_state=42,
+                n_cv=1,
+                n_refit=0,
+                verbosity=0,
+
+            ),
+            "ExtraTreesClassifier": ExtraTreesClassifier(
                 random_state=42,
                 verbose=0,
-                allow_writing_files=False
             ),
 
             "LGBMClassifier": LGBMClassifier(
