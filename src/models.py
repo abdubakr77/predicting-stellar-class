@@ -27,6 +27,8 @@ def auto_tune(X,y,model_class, tuning_params:dict = None, cv=None , n_trials=50)
                 elif config[0] == 'float':
                     
                     params[param_name] = trial.suggest_float(param_name,config[1],config[2],log=config[3])
+                elif config[0] == "categorical":
+                    params[param_name] = trial.suggest_categorical(param_name,config[1])
                 
                 else:
                     params[param_name] = config
