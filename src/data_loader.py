@@ -21,5 +21,6 @@ def load_data(df_path,include_class=True,is_org_dataset=False):
         from sklearn.preprocessing import LabelEncoder
         le = LabelEncoder()
         df["class"] = le.fit_transform(df["class"])
+        print(f'Label Inverse Is {le.classes_}')
 
     return df
