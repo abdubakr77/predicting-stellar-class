@@ -1,11 +1,23 @@
 import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
-from sklearn.metrics import confusion_matrix,roc_curve, auc
+from sklearn.metrics import confusion_matrix, roc_curve, auc
 from sklearn.preprocessing import label_binarize
 
 
-def show_count_plots(df,col,draw_pie_chart = True,save_path:str=None):
+def show_count_plots(df, col, draw_pie_chart=True, save_path: str = None):
+    """
+    Plot a bar chart and optional pie chart of value counts for a column.
+
+    Args:
+        df: dataframe containing the column
+        col: column name to count
+        draw_pie_chart: whether to also draw the pie chart
+        save_path: if given, saves the figure to this path
+
+    Returns:
+        None, shows the plot
+    """
     counts = df[col].value_counts()
 
     fig, ax = plt.subplots(1, 2, figsize=(14, 6))
@@ -24,7 +36,20 @@ def show_count_plots(df,col,draw_pie_chart = True,save_path:str=None):
     plt.tight_layout()
     plt.show()
 
-def show_corr(df,save_path:str=None,h=15,w=12):
+
+def show_corr(df, save_path: str = None, h=15, w=12):
+    """
+    Plot a correlation heatmap for all numeric columns in a dataframe.
+
+    Args:
+        df: dataframe to correlate
+        save_path: if given, saves the figure to this path
+        h: figure height
+        w: figure width
+
+    Returns:
+        None, shows the plot
+    """
     plt.figure(figsize=(h, w))
     sns.heatmap(df.corr(), annot=True, cmap='coolwarm', vmin=-1, vmax=1)
 
@@ -35,8 +60,17 @@ def show_corr(df,save_path:str=None,h=15,w=12):
     plt.show()
 
 
-def show_outliers(df , save_path:str=None):
-    
+def show_outliers(df, save_path: str = None):
+    """
+    Plot a boxplot across all columns to spot outliers at a glance.
+
+    Args:
+        df: dataframe to plot
+        save_path: if given, saves the figure to this path
+
+    Returns:
+        None, shows the plot
+    """
     plt.figure(figsize=(12, 6))
     sns.boxplot(df)
     plt.xticks(rotation=45)
@@ -50,13 +84,24 @@ def show_outliers(df , save_path:str=None):
     plt.show()
 
 
-def show_confusion_matrix(y_true,y_pred,target_names=None,save_path:str=None):
+def show_confusion_matrix(y_true, y_pred, target_names=None, save_path: str = None):
+    """
+    Plot a confusion matrix as a heatmap.
 
+    Args:
+        y_true: ground truth labels
+        y_pred: predicted labels
+        target_names: optional class names for the axis labels
+        save_path: if given, saves the figure to this path
+
+    Returns:
+        None, shows the plot
+    """
     cm = confusion_matrix(y_true, y_pred)
 
     plt.figure(figsize=(8, 7))
     sns.heatmap(cm, annot=True, fmt='d', cmap='Blues',
-                xticklabels=None if target_names is None else target_names, 
+                xticklabels=None if target_names is None else target_names,
                 yticklabels=None if target_names is None else target_names)
 
     plt.xlabel('Predicted')
@@ -66,8 +111,6 @@ def show_confusion_matrix(y_true,y_pred,target_names=None,save_path:str=None):
     if save_path:
         plt.savefig(save_path, dpi=300)
     plt.show()
-
-
 
 
 def remove_outliers_iqr(
@@ -113,26 +156,33 @@ def remove_outliers_iqr(
     return df.loc[mask].reset_index(drop=True)
 
 
-
 def plot_roc_curve(y_true, y_probas, target_names):
     """
-    y_true: encoded labels (0, 1, 2)
-    y_probas: predict_proba output (n_samples, n_classes)
+    Plot a one-vs-rest ROC curve for each class.
+
+    Args:
+        y_true: encoded labels (0, 1, 2)
+        y_probas: predict_proba output (n_samples, n_classes)
+        target_names: class names matching the encoded labels, in order
+
+    Returns:
+        None, shows the plot
     """
     n_classes = len(target_names)
-    
+
+    # one-hot the labels so each class can be scored against the rest
     y_bin = label_binarize(y_true, classes=list(range(n_classes)))
-    
+
     plt.figure(figsize=(10, 6))
-    
+
     colors = ['blue', 'orange', 'green']
-    
+
     for i, (name, color) in enumerate(zip(target_names, colors)):
         fpr, tpr, _ = roc_curve(y_bin[:, i], y_probas[:, i])
         roc_auc = auc(fpr, tpr)
         plt.plot(fpr, tpr, color=color,
                  label=f'{name} (AUC = {roc_auc:.4f})')
-    
+
     plt.plot([0, 1], [0, 1], 'k--')
     plt.xlabel('False Positive Rate')
     plt.ylabel('True Positive Rate')
